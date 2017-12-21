@@ -1,4 +1,4 @@
-# bih/spotify-web-playback-react
+# bih/spotify-web-playback-react-template
 
 This is a modified template of [Create React App](https://github.com/facebookincubator/create-react-app), with an example usage of the [Spotify Web Playback SDK](https://beta.developer.spotify.com/documentation/web-playback-sdk).
 
