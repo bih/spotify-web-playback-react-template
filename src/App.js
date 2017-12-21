@@ -106,7 +106,7 @@ class App extends Component {
   render = () => {
     let {
       userAccessToken,
-      playerState
+      playerState: { track_window }
     } = this.state;
 
     return (
@@ -120,7 +120,7 @@ class App extends Component {
           onPlayerReady={this.onPlayerReady}
           onPlayerStateChange={this.onPlayerStateChange}>
           <h1>Web Playback SDK</h1>
-          {playerState && <NowPlayingView track_window={playerState.track_window} />}
+          {playerState && <NowPlayingView track_window={track_window} />}
         </WebPlayback> }
       </div>
     );
