@@ -95,10 +95,6 @@ class App extends Component {
     playerState: null
   }
 
-  setUserAccessToken = (userAccessToken) => {
-    this.setState({ userAccessToken: userAccessToken });
-  }
-
   onPlayerReady = (data) => {
     console.log("player ready", data);
   }
@@ -115,7 +111,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        {!userAccessToken && <CollectUserAccessToken setUserAccessToken={this.setUserAccessToken} />}
+        {!userAccessToken && <CollectUserAccessToken setUserAccessToken={(token) => this.setState({ userAccessToken: token })} />}
         {userAccessToken && <WebPlayback
           playerName="Bilawal's React Player"
           playerInitialVolume={1.0}
