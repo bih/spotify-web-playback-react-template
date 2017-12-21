@@ -52,18 +52,13 @@ class NowPlayingView extends Component {
 }
 
 class NowPlayingControls extends Component {
-  resume = () => { window.Spotify.PlayerInstance.resume(); }
-  pause = () => { window.Spotify.PlayerInstance.pause(); }
-  previousTrack = () => { window.Spotify.PlayerInstance.previousTrack(); }
-  nextTrack = () => { window.Spotify.PlayerInstance.nextTrack(); }
-
   render = () => {
     return (
       <div>
-        <button onClick={this.resume}>Resume</button>
-        <button onClick={this.pause}>Pause</button>
-        <button onClick={this.previousTrack}>Previous Track</button>
-        <button onClick={this.nextTrack}>Next Track</button>
+        <button onClick={() => window.Spotify.PlayerInstance.resume()}>Resume</button>
+        <button onClick={() => window.Spotify.PlayerInstance.pause()}>Pause</button>
+        <button onClick={() => window.Spotify.PlayerInstance.previousTrack()}>Previous Track</button>
+        <button onClick={() => window.Spotify.PlayerInstance.nextTrack()}>Next Track</button>
       </div>
     );
   }
@@ -72,8 +67,7 @@ class NowPlayingControls extends Component {
 class CollectUserAccessToken extends Component {
   submitForm = (e) => {
     e.preventDefault();
-    let value = this.userInput.value;
-    this.props.setUserAccessToken(value);
+    this.props.setUserAccessToken(this.userInput.value);
   }
 
   render = () => {
