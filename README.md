@@ -1,3 +1,16 @@
+# bih/spotify-web-playback-react
+
+This is a modified template of [Create React App](https://github.com/facebookincubator/create-react-app), with an example usage of the [Spotify Web Playback SDK](https://beta.developer.spotify.com/documentation/web-playback-sdk).
+
+*It contains the following file changes:*
+- `src/spotify/spotify-web-playback.js`
+- `src/App.js`
+- `public/index.html`
+
+It's still a work in progress, and once it's polished, I'll make it into its own official React Node package.
+
+# facebookincubator/create-react-app
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
