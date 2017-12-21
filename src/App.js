@@ -100,6 +100,7 @@ class App extends Component {
   render = () => {
     let {
       userAccessToken,
+      playerState,
       playerState: { track_window }
     } = this.state;
 
