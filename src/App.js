@@ -5,22 +5,6 @@ import './App.css';
 // Add Spotify Web Playback for React
 import WebPlayback from './spotify/spotify-web-playback.js';
 
-// class App extends Component {
-//   render() {
-//     return (
-//       <div className="App">
-//         <header className="App-header">
-//           <img src={logo} className="App-logo" alt="logo" />
-//           <h1 className="App-title">Welcome to React</h1>
-//         </header>
-//         <p className="App-intro">
-//           To get started, edit <code>src/App.js</code> and save to reload.
-//         </p>
-//       </div>
-//     );
-//   }
-// }
-
 class NowPlayingView extends Component {
   render = () => {
     let {
@@ -65,20 +49,18 @@ class NowPlayingControls extends Component {
 }
 
 class CollectUserAccessToken extends Component {
-  submitForm = (e) => {
-    e.preventDefault();
-    this.props.setUserAccessToken(this.userInput.value);
-  }
-
   render = () => {
     return (
-      <form onSubmit={this.submitForm}>
-        <label>
-          <h3>Enter User Access Token</h3>
-          <input type="text" name="userAccessToken" ref={(c) => this.userInput = c} />
-        </label>
-        <button type="submit">Submit</button>
-      </form>
+      <div>
+        <form onSubmit={() => this.props.setUserAccessToken(this.userInput.value)}>
+          <label>
+            <h3>Enter User Access Token</h3>
+            <input type="text" name="userAccessToken" ref={(c) => this.userInput = c} />
+          </label>
+          <button type="submit">Submit</button>
+        </form>
+        <a href="https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify">Get Your Access Token from Spotify</a>
+      </div>
     );
   }
 }
@@ -89,30 +71,27 @@ class App extends Component {
     playerState: null
   }
 
-  onPlayerReady = (data) => {
-    console.log("player ready", data);
-  }
-
-  onPlayerStateChange = (playerState) => {
-    this.setState({ playerState: playerState });
-  }
-
   render = () => {
-    let {
-      userAccessToken,
-      playerState
-    } = this.state;
+    let { userAccessToken, playerState } = this.state;
 
     return (
       <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Welcome to React</h1>
+        </header>
+        <p className="App-intro">
+          To get started, edit <code>src/App.js</code> and save to reload.
+        </p>
+        <br />
         {!userAccessToken && <CollectUserAccessToken setUserAccessToken={(token) => this.setState({ userAccessToken: token })} />}
         {userAccessToken && <WebPlayback
           playerName="Bilawal's React Player"
           playerInitialVolume={1.0}
           playerAutoConnect={true}
           userAccessToken={userAccessToken}
-          onPlayerReady={this.onPlayerReady}
-          onPlayerStateChange={this.onPlayerStateChange}>
+          onPlayerReady={(data) => console.log("player ready", data)}
+          onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
           <h1>Web Playback SDK</h1>
           {playerState && <NowPlayingView track_window={playerState.track_window} />}
         </WebPlayback> }

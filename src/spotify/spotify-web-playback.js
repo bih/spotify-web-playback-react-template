@@ -20,7 +20,7 @@ class WebPlaybackLoader extends Component {
 }
 
 class WebPlaybackDeviceWait extends Component {
-  createPlayerInstance = () => {
+  createSpotifyPlayerInstance = () => {
     window.Spotify.PlayerInstance = new window.Spotify.Player({
       name: this.props.playerName,
       volume: this.props.playerInitialVolume,
@@ -46,12 +46,12 @@ class WebPlaybackDeviceWait extends Component {
 
   componentWillMount = () => {
     if (!window.Spotify.PlayerInstance) {
-      this.createPlayerInstance();
+      this.createSpotifyPlayerInstance();
     }
   }
 
   render = () => {
-    return (<h3>Waiting for Device to Transfer</h3>);
+    return (<h3>Waiting for Device to Transfer to Web Playback SDK</h3>);
   }
 }
 
@@ -63,6 +63,7 @@ class WebPlaybackPlayer extends Component {
 
 class WebPlayback extends Component {
   interval = null
+
   state = {
     loaded: false,
     selected: false,
@@ -74,9 +75,8 @@ class WebPlayback extends Component {
 
     if (!this.interval) {
       this.interval = setInterval(async () => {
-        let { PlayerInstance } = window.Spotify;
-        if (PlayerInstance) {
-          let state = await PlayerInstance.getCurrentState();
+        if (window.Spotify.PlayerInstance) {
+          let state = await window.Spotify.PlayerInstance.getCurrentState();
           let isSelected = state !== null;
           this.setState({ selected: isSelected });
         }
@@ -84,25 +84,9 @@ class WebPlayback extends Component {
     }
   };
 
-  setErrorState = errorState => {
-    this.setState({ error: errorState });
-  }
-
-  renderLoader = () => {
-    return (<WebPlaybackLoader setLoadingState={this.setLoadingState} />);
-  }
-
-  renderError = () => {
-    return (<h3>ERROR!</h3>);
-  }
-
-  renderDeviceTransferWait = () => {
-    return (<WebPlaybackDeviceWait {...this.props} />);
-  }
-
   renderPlayer = () => {
     return (
-      <WebPlaybackPlayer setErrorState={this.setErrorState} {...this.props}>
+      <WebPlaybackPlayer setErrorState={(errorState) => this.setState({ error: errorState })} {...this.props}>
         {this.props.children}
       </WebPlaybackPlayer>
     );
@@ -115,10 +99,10 @@ class WebPlayback extends Component {
   render = () => {
     return (
       <div>
-        {this.state.error && this.renderError()}
-        {this.state.loaded && !this.state.selected && this.renderDeviceTransferWait()}
+        {this.state.error && <h3>Error</h3>}
+        {this.state.loaded && !this.state.selected && <WebPlaybackDeviceWait {...this.props} />}
         {this.state.loaded && this.state.selected && this.renderPlayer()}
-        {!this.state.loaded && this.renderLoader()}
+        {!this.state.loaded && <WebPlaybackLoader setLoadingState={this.setLoadingState} />}
       </div>
     );
   }
