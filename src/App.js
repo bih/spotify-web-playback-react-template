@@ -95,6 +95,8 @@ class App extends Component {
           <h1>Web Playback SDK</h1>
           {playerState && <NowPlayingView track_window={playerState.track_window} />}
         </WebPlayback> }
+        <br />
+        <a href="https://github.com/bih/spotify-web-playback-react-template">Fork on GitHub</a>
       </div>
     );
   }
