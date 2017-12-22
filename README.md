@@ -2,6 +2,8 @@
 
 This is a modified template of [Create React App](https://github.com/facebookincubator/create-react-app), with an example usage of the [Spotify Web Playback SDK](https://beta.developer.spotify.com/documentation/web-playback-sdk).
 
+Demo: [https://bih.github.io/spotify-web-playback-react-template/](https://bih.github.io/spotify-web-playback-react-template/)
+
 *It contains the following file changes:*
 - `src/spotify/spotify-web-playback.js`
 - `src/App.js`
