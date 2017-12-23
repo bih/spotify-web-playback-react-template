@@ -44,8 +44,9 @@ This is the React component(s) this project exposes:
 
 ## Components
 
-Spotify will load the Web Playback SDK when the page initially loads, not when you call the `<WebPlayback />` element in your React code.
-The way we're doing it now is far less complicated, but loading the SDK only when we need it is something we'd like to work on for the future to improve performance in advanced React applications.
+Some notes:
+- Spotify will load the Web Playback SDK when the page initially loads, not when you call the `<WebPlayback />` element in your React code
+- The `<WebPlayback />` component will select the right children React components, so the `onPlayerReady` and `onPlayerStateChange` are available only for additional customization and control.
 
 ### <WebPlayback />
 
@@ -72,7 +73,7 @@ Once loaded, it is available in JavaScript under `window.Spotify.PlayerInstance`
 
 ### <WebPlaybackError />
 
-**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+**Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
 The contents of this element will only be visible when an error has occurred in the Web Playback SDK.
 
@@ -88,7 +89,7 @@ The contents of this element will only be visible when an error has occurred in 
 
 ### <WebPlaybackLoading />
 
-**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+**Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
 The contents of this element will only be visible whilst the SDK being loaded in the user's browser.
 
@@ -104,7 +105,7 @@ The contents of this element will only be visible whilst the SDK being loaded in
 
 ### <WebPlaybackWaitingForDevice />
 
-**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+**Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
 The contents of this element will only be visible once the SDK has loaded, but is waiting for the user to select your player inside of Spotify Connect.
 This can be done automatically [through the Web API](https://beta.developer.spotify.com/documentation/web-api/reference/player/transfer-a-users-playback/), but requires a HTTP request that is not currently implemented.
@@ -121,7 +122,7 @@ This can be done automatically [through the Web API](https://beta.developer.spot
 
 ### <WebPlaybackScreen />
 
-**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+**Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
 The contents of this element will only be visible when playback is available. This element is perfect for presenting a now playing view with controls.
 
