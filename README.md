@@ -48,7 +48,7 @@ Some notes:
 - Spotify will load the Web Playback SDK when the page initially loads, not when you call the `<WebPlayback />` element in your React code
 - The `<WebPlayback />` component will select the right children React components, so the `onPlayerReady` and `onPlayerStateChange` are available only for additional customization and control.
 
-### <WebPlayback />
+### &lt;WebPlayback /&gt;
 
 Declare this when you want to create an instance of the Web Playback SDK.
 Once loaded, it is available in JavaScript under `window.Spotify.PlayerInstance`
@@ -71,7 +71,7 @@ Once loaded, it is available in JavaScript under `window.Spotify.PlayerInstance`
 </WebPlayback>
 ```
 
-### <Screen type="Error" />
+### &lt;Screen type="Error" /&gt;
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
@@ -87,7 +87,7 @@ The contents of this element will only be visible when an error has occurred in 
 </WebPlayback>
 ```
 
-### <Screen type="Loading" />
+### &lt;Screen type="Loading" /&gt;
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
@@ -103,7 +103,7 @@ The contents of this element will only be visible whilst the SDK being loaded in
 </WebPlayback>
 ```
 
-### <Screen type="WaitingForDevice" />
+### &lt;Screen type="WaitingForDevice" /&gt;
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
@@ -120,7 +120,7 @@ This can be done automatically [through the Web API](https://beta.developer.spot
 </WebPlayback>
 ```
 
-### <Screen type="Player" />
+### &lt;Screen type="Player" /&gt;
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
