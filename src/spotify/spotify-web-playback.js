@@ -3,7 +3,13 @@ import React, { Component } from 'react';
 // Placeholder
 window.onSpotifyWebPlaybackSDKReady = () => {};
 
-class WebPlaybackLoader extends Component {
+class WebPlaybackError extends Component {
+  render = () => {
+    return this.props.children;
+  }
+}
+
+class WebPlaybackLoading extends Component {
   componentWillMount = () => {
     if (window.Spotify) {
       this.props.setLoadingState(true);
@@ -19,7 +25,7 @@ class WebPlaybackLoader extends Component {
   }
 }
 
-class WebPlaybackDeviceWait extends Component {
+class WebPlaybackWaitingForDevice extends Component {
   createSpotifyPlayerInstance = () => {
     window.Spotify.PlayerInstance = new window.Spotify.Player({
       name: this.props.playerName,
@@ -29,19 +35,22 @@ class WebPlaybackDeviceWait extends Component {
       }
     });
 
-    let { PlayerInstance } = window.Spotify;
+    let { PlayerInstance: instance } = window.Spotify;
 
-    PlayerInstance.on("initialization_error", e => { this.props.setErrorState(e.message); });
-    PlayerInstance.on("authentication_error", e => { this.props.setErrorState(e.message); });
-    PlayerInstance.on("account_error", e => { this.props.setErrorState(e.message); });
-    PlayerInstance.on("playback_error", e => { this.props.setErrorState(e.message); });
-    PlayerInstance.on("player_state_changed", state => {
+    instance.on("initialization_error", e => { this.props.setError(e.message); });
+    instance.on("authentication_error", e => { this.props.setError(e.message); });
+    instance.on("account_error", e => { this.props.setError(e.message); });
+    instance.on("playback_error", e => { this.props.setError(e.message); });
+    instance.on("player_state_changed", state => {
       if (this.props.onPlayerStateChange) this.props.onPlayerStateChange(state);
     });
-    PlayerInstance.on("ready", data => {
+    instance.on("ready", data => {
       if (this.props.onPlayerReady) this.props.onPlayerReady(data);
     });
-    if (this.props.playerAutoConnect) PlayerInstance.connect();
+
+    if (this.props.playerAutoConnect) {
+      instance.connect();
+    }
   }
 
   componentWillMount = () => {
@@ -55,7 +64,7 @@ class WebPlaybackDeviceWait extends Component {
   }
 }
 
-class WebPlaybackPlayer extends Component {
+class WebPlaybackScreen extends Component {
   render = () => {
     return this.props.children;
   }
@@ -65,9 +74,9 @@ class WebPlayback extends Component {
   interval = null
 
   state = {
-    loaded: false,
-    selected: false,
-    error: null
+    loaded: false, // Has the player loaded?
+    selected: false, // Has the player been selected?
+    error: null // Has the player thrown an error?
   }
 
   setLoadingState = loadingState => {
@@ -77,35 +86,77 @@ class WebPlayback extends Component {
       this.interval = setInterval(async () => {
         if (window.Spotify.PlayerInstance) {
           let state = await window.Spotify.PlayerInstance.getCurrentState();
-          let isSelected = state !== null;
-          this.setState({ selected: isSelected });
+          this.setState({ selected: (state !== null) });
+          if (this.props.onPlayerStateChange) this.props.onPlayerStateChange(state);
         }
       }, 100);
     }
   };
 
-  renderPlayer = () => {
-    return (
-      <WebPlaybackPlayer setErrorState={(errorState) => this.setState({ error: errorState })} {...this.props}>
-        {this.props.children}
-      </WebPlaybackPlayer>
-    );
-  }
-
   componentWillUnmount = () => {
     if (this.interval) clearInterval(this.interval);
+  }
+
+  childrenWithAddedProps = () => {
+    return React.Children.map(this.props.children, child => {
+      const element_name = child.type.name;
+
+      switch (element_name) {
+        case 'WebPlaybackError':
+          child = React.cloneElement(child, { setError: this.setLoadingState })
+          break;
+        case 'WebPlaybackLoading':
+          child = React.cloneElement(child, { setLoadingState: this.setLoadingState })
+          break;
+        case 'WebPlaybackWaitingForDevice':
+          child = React.cloneElement(child, this.props);
+          break;
+        case 'WebPlaybackScreen':
+          (async (shouldRun) => {
+            if (shouldRun) {
+              let playerState = await window.Spotify.PlayerInstance.getCurrentState();
+              child = React.cloneElement(child, { playerState: playerState });
+            }
+          })(typeof window.Spotify.PlayerInstance !== "undefined");
+          break;
+        default:
+          throw new Error("Unrecognised WebPlayback React Component");
+          break;
+      }
+
+      return child;
+    });
+  }
+
+  getViewState = (state) => {
+    var element;
+
+    this.childrenWithAddedProps().forEach(child => {
+      let element_name = child.type.name;
+      if (state === element_name) {
+        element = child;
+      }
+    });
+
+    return [ element ];
   }
 
   render = () => {
     return (
       <div>
-        {this.state.error && <h3>Error</h3>}
-        {this.state.loaded && !this.state.selected && <WebPlaybackDeviceWait {...this.props} />}
-        {this.state.loaded && this.state.selected && this.renderPlayer()}
-        {!this.state.loaded && <WebPlaybackLoader setLoadingState={this.setLoadingState} />}
+        {this.state.error && this.getViewState("WebPlaybackError")}
+        {!this.state.loaded && this.getViewState("WebPlaybackLoading")}
+        {this.state.loaded && !this.state.selected && this.getViewState("WebPlaybackWaitingForDevice")}
+        {this.state.loaded && this.state.selected && this.getViewState("WebPlaybackScreen")}
       </div>
     );
   }
 }
 
-export default WebPlayback;
+export {
+  WebPlaybackError,
+  WebPlaybackLoading,
+  WebPlaybackWaitingForDevice,
+  WebPlaybackScreen,
+  WebPlayback
+};

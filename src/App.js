@@ -3,7 +3,13 @@ import logo from './logo.svg';
 import './App.css';
 
 // Add Spotify Web Playback for React
-import WebPlayback from './spotify/spotify-web-playback.js';
+import {
+  WebPlaybackError as Error,
+  WebPlaybackLoading as Loading,
+  WebPlaybackWaitingForDevice as WaitingForDevice,
+  WebPlaybackScreen as Screen,
+  WebPlayback
+} from './spotify/spotify-web-playback.js';
 
 class NowPlayingView extends Component {
   render = () => {
@@ -57,11 +63,13 @@ class CollectUserAccessToken extends Component {
         <form onSubmit={() => this.props.setUserAccessToken(this.userInput.value)}>
           <label>
             <h3>Enter User Access Token</h3>
-            <input type="text" name="userAccessToken" ref={(c) => this.userInput = c} />
+            <input type="text" name="userAccessToken" ref={(c) => this.userInput = c} onChange={() => {}} />
           </label>
           <button type="submit">Submit</button>
         </form>
-        <a href="https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify">Get Your Access Token from Spotify</a>
+        <br />
+        <br />
+        <a href="https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify">Get Your Access Token from <strong>Spotify for Developers</strong></a>
       </div>
     );
   }
@@ -74,7 +82,10 @@ class App extends Component {
   }
 
   render = () => {
-    let { userAccessToken, playerState } = this.state;
+    let {
+      userAccessToken,
+      playerState
+    } = this.state;
 
     return (
       <div className="App">
@@ -87,18 +98,24 @@ class App extends Component {
         </p>
         <br />
         {!userAccessToken && <CollectUserAccessToken setUserAccessToken={(token) => this.setState({ userAccessToken: token })} />}
-        {userAccessToken && <WebPlayback
-          playerName="Bilawal's React Player"
-          playerInitialVolume={1.0}
-          playerAutoConnect={true}
-          userAccessToken={userAccessToken}
-          onPlayerReady={(data) => console.log("player ready", data)}
-          onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
-          <h1>Web Playback SDK</h1>
-          {playerState && <NowPlayingView playerState={playerState} />}
-        </WebPlayback> }
+        {userAccessToken &&
+          <WebPlayback
+            playerName="Bilawal's React Player"
+            playerInitialVolume={1.0}
+            playerAutoConnect={true}
+            userAccessToken={userAccessToken}
+            onPlayerReady={(data) => console.log("player ready", data)}
+            onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
+            <Error><h3>Error</h3></Error>
+            <Loading><h3>Loading Web Playback SDK</h3></Loading>
+            <WaitingForDevice><h3>Waiting for Device to be Selected</h3></WaitingForDevice>
+            <Screen>
+              <h1>Web Playback SDK</h1>
+              {playerState && <NowPlayingView playerState={playerState} />}
+            </Screen>
+          </WebPlayback> }
         <br />
-        <a href="https://github.com/bih/spotify-web-playback-react-template">Fork on GitHub</a>
+        <a href="https://github.com/bih/spotify-web-playback-react-template">Fork on GitHub</a> &mdash; Built by <a href="https://bilaw.al">Bilawal Hameed</a>
       </div>
     );
   }
