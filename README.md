@@ -11,6 +11,126 @@ Demo: [https://bih.github.io/spotify-web-playback-react-template/](https://bih.g
 
 It's still a work in progress, and once it's polished, I'll make it into its own official React Node package.
 
+## Example code
+
+This is the React component(s) this project exposes:
+
+```jsx
+<WebPlayback
+  playerName="Bilawal's React Player"
+  playerInitialVolume={1.0}
+  playerAutoConnect={true}
+  userAccessToken={userAccessToken}
+  onPlayerReady={(data) => console.log("player ready", data)}
+  onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
+
+  <WebPlaybackError>
+    <h3>Error</h3>
+  </WebPlaybackError>
+
+  <WebPlaybackLoading>
+    <h3>Loading Web Playback SDK</h3>
+  </WebPlaybackLoading>
+
+  <WebPlaybackWaitingForDevice>
+    <h3>Waiting for Device to be Selected</h3>
+  </WebPlaybackWaitingForDevice>
+
+  <WebPlaybackScreen>
+    <h1>Web Playback SDK</h1>
+    {playerState && <NowPlayingView playerState={playerState} />}
+  </WebPlaybackScreen>
+</WebPlayback>
+```
+
+## Components
+
+Spotify will load the Web Playback SDK when the page initially loads, not when you call the `<WebPlayback />` element in your React code.
+The way we're doing it now is far less complicated, but loading the SDK only when we need it is something we'd like to work on for the future to improve performance in advanced React applications.
+
+### <WebPlayback />
+
+Declare this when you want to create an instance of the Web Playback SDK.
+Once loaded, it is available in JavaScript under `window.Spotify.PlayerInstance`
+
+```jsx
+<WebPlayback
+  playerName="Bilawal's React Player" {# The name of your player that shows up in Spotify. }
+  playerInitialVolume={1.0} {# The initial volume of your player. Between 0 and 1. (Recommended: 1.0) }
+  playerAutoConnect={true} {# Once defined, should it load automatically? (Recommended: Yes) }
+  userAccessToken={userAccessToken} {# The Spotify access token. See https://beta.developer.spotify.com/documentation/web-playback-sdk for more info. }
+  onPlayerReady={(data) => console.log("player ready", data)} {# Optional: Callback for when the player is ready to play music. }
+  onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}> {# Optional: Callback for when the player state has changed. }
+...
+</WebPlayback>
+```
+
+### <WebPlaybackError />
+
+**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+
+The contents of this element will only be visible when an error has occurred in the Web Playback SDK.
+
+```jsx
+<WebPlayback ...>
+  <WebPlaybackError>
+    <h3>An error has occurred!</h3>
+  </WebPlaybackError>
+
+  ...
+</WebPlayback>
+```
+
+### <WebPlaybackLoading />
+
+**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+
+The contents of this element will only be visible whilst the SDK being loaded in the user's browser.
+
+```jsx
+<WebPlayback ...>
+  <WebPlaybackLoading>
+    <h3>Loading the Web Playback SDK. Please wait ....</h3>
+  </WebPlaybackLoading>
+
+  ...
+</WebPlayback>
+```
+
+### <WebPlaybackWaitingForDevice />
+
+**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+
+The contents of this element will only be visible once the SDK has loaded, but is waiting for the user to select your player inside of Spotify Connect.
+This can be done automatically [through the Web API](https://beta.developer.spotify.com/documentation/web-api/reference/player/transfer-a-users-playback/), but requires a HTTP request that is not currently implemented.
+
+```jsx
+<WebPlayback ...>
+  <WebPlaybackWaitingForDevice>
+    <h3>Waiting for Device to be Selected</h3>
+  </WebPlaybackWaitingForDevice>
+
+  ...
+</WebPlayback>
+```
+
+### <WebPlaybackScreen />
+
+**Note:**: This element must be nested inside of `<WebPlayback />` as per the example code above.
+
+The contents of this element will only be visible when playback is available. This element is perfect for presenting a now playing view with controls.
+
+```jsx
+<WebPlayback ...>
+  <WebPlaybackScreen>
+    <h3>Web Playback SDK</h3>
+    You're listening to {this.state.playerState.track_window.current_track.name}!
+  </WebPlaybackScreen>
+
+  ...
+</WebPlayback>
+```
+
 # facebookincubator/create-react-app
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
@@ -299,7 +419,7 @@ In the WebStorm menu `Run` select `Edit Configurations...`. Then click `+` and s
 
 Start your app by running `npm start`, then press `^D` on macOS or `F9` on Windows and Linux or click the green debug icon to start debugging in WebStorm.
 
-The same way you can debug your application in IntelliJ IDEA Ultimate, PhpStorm, PyCharm Pro, and RubyMine. 
+The same way you can debug your application in IntelliJ IDEA Ultimate, PhpStorm, PyCharm Pro, and RubyMine.
 
 ## Formatting Code Automatically
 
@@ -1837,7 +1957,7 @@ If you’re using [Apache HTTP Server](https://httpd.apache.org/), you need to c
     RewriteRule ^ index.html [QSA,L]
 ```
 
-It will get copied to the `build` folder when you run `npm run build`. 
+It will get copied to the `build` folder when you run `npm run build`.
 
 If you’re using [Apache Tomcat](http://tomcat.apache.org/), you need to follow [this Stack Overflow answer](https://stackoverflow.com/a/41249464/4878474).
 
@@ -2233,7 +2353,7 @@ To resolve this:
 1. Open an issue on the dependency's issue tracker and ask that the package be published pre-compiled.
   * Note: Create React App can consume both CommonJS and ES modules. For Node.js compatibility, it is recommended that the main entry point is CommonJS. However, they can optionally provide an ES module entry point with the `module` field in `package.json`. Note that **even if a library provides an ES Modules version, it should still precompile other ES6 features to ES5 if it intends to support older browsers**.
 
-2. Fork the package and publish a corrected version yourself. 
+2. Fork the package and publish a corrected version yourself.
 
 3. If the dependency is small enough, copy it to your `src/` folder and treat it as application code.
 
