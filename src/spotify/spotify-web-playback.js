@@ -120,8 +120,7 @@ class WebPlayback extends Component {
           })(typeof window.Spotify.PlayerInstance !== "undefined");
           break;
         default:
-          throw new Error("Unrecognised WebPlayback React Component");
-          break;
+          throw new Error(`Unrecognised WebPlayback React Component - ${element_name}`);
       }
 
       return child;

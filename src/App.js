@@ -33,7 +33,7 @@ class NowPlayingView extends Component {
 
     return (
       <div>
-        <img src={album_image} />
+        <img src={album_image} alt={track_name} />
         <h3><a href={track_uri}>{track_name}</a> by <a href={artist_uri}>{artist_name}</a></h3>
         <h3><a href={album_uri}>{album_name}</a></h3>
         <h3>ID: {id} | Position: {position_ms} | Duration: {duration_ms}</h3>
@@ -106,9 +106,19 @@ class App extends Component {
             userAccessToken={userAccessToken}
             onPlayerReady={(data) => console.log("player ready", data)}
             onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
-            <Error><h3>Error</h3></Error>
-            <Loading><h3>Loading Web Playback SDK</h3></Loading>
-            <WaitingForDevice><h3>Waiting for Device to be Selected</h3></WaitingForDevice>
+
+            <Error>
+              <h3>Error</h3>
+            </Error>
+
+            <Loading>
+              <h3>Loading Web Playback SDK</h3>
+            </Loading>
+
+            <WaitingForDevice>
+              <h3>Waiting for Device to be Selected</h3>
+            </WaitingForDevice>
+
             <Screen>
               <h1>Web Playback SDK</h1>
               {playerState && <NowPlayingView playerState={playerState} />}
