@@ -4,9 +4,6 @@ import './App.css';
 
 // Add Spotify Web Playback for React
 import {
-  WebPlaybackError as Error,
-  WebPlaybackLoading as Loading,
-  WebPlaybackWaitingForDevice as WaitingForDevice,
   WebPlaybackScreen as Screen,
   WebPlayback
 } from './spotify/spotify-web-playback.js';
@@ -97,7 +94,9 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         <br />
-        {!userAccessToken && <CollectUserAccessToken setUserAccessToken={(token) => this.setState({ userAccessToken: token })} />}
+        {!userAccessToken &&
+          <CollectUserAccessToken
+            setUserAccessToken={(token) => this.setState({ userAccessToken: token })} />}
         {userAccessToken &&
           <WebPlayback
             playerName="Bilawal's React Player"
@@ -107,20 +106,20 @@ class App extends Component {
             onPlayerReady={(data) => console.log("player ready", data)}
             onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
 
-            <Error>
+            <Screen type="Error">
               <h3>Error</h3>
-            </Error>
+            </Screen>
 
-            <Loading>
+            <Screen type="Loading">
               <h3>Loading Web Playback SDK</h3>
-            </Loading>
+            </Screen>
 
-            <WaitingForDevice>
+            <Screen type="WaitingForDevice">
               <h3>Waiting for Device to be Selected</h3>
-            </WaitingForDevice>
+            </Screen>
 
-            <Screen>
-              <h1>Web Playback SDK</h1>
+            <Screen type="Player">
+              <h1>Web Playback SDK + React</h1>
               {playerState && <NowPlayingView playerState={playerState} />}
             </Screen>
           </WebPlayback> }

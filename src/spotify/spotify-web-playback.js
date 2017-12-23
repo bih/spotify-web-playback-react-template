@@ -3,12 +3,6 @@ import React, { Component } from 'react';
 // Placeholder
 window.onSpotifyWebPlaybackSDKReady = () => {};
 
-class WebPlaybackError extends Component {
-  render = () => {
-    return this.props.children;
-  }
-}
-
 class WebPlaybackLoading extends Component {
   componentWillMount = () => {
     if (window.Spotify) {
@@ -99,63 +93,53 @@ class WebPlayback extends Component {
 
   childrenWithAddedProps = () => {
     return React.Children.map(this.props.children, child => {
-      const element_name = child.type.name;
+      let { type: child_type } = child.props;
 
-      switch (element_name) {
-        case 'WebPlaybackError':
-          child = React.cloneElement(child, { setError: this.setLoadingState })
-          break;
-        case 'WebPlaybackLoading':
-          child = React.cloneElement(child, { setLoadingState: this.setLoadingState })
-          break;
-        case 'WebPlaybackWaitingForDevice':
-          child = React.cloneElement(child, this.props);
-          break;
-        case 'WebPlaybackScreen':
-          (async (shouldRun) => {
-            if (shouldRun) {
-              let playerState = await window.Spotify.PlayerInstance.getCurrentState();
-              child = React.cloneElement(child, { playerState: playerState });
-            }
-          })(typeof window.Spotify.PlayerInstance !== "undefined");
-          break;
+      switch (child_type) {
+        case 'Error':
+          return React.cloneElement(child, { errorMessage: this.state.error });
+        case 'Loading':
+          return (
+            <WebPlaybackLoading type="Loading" setLoadingState={this.setLoadingState}>
+              {this.props.children}
+            </WebPlaybackLoading>
+          );
+        case 'WaitingForDevice':
+          return (
+            <WebPlaybackWaitingForDevice type="WaitingForDevice" {...this.props}>
+              {this.props.children}
+            </WebPlaybackWaitingForDevice>
+          );
+        case 'Player':
+          // TODO: Send state as a props for better developer UX
+          return child;
         default:
-          throw new Error(`Unrecognised WebPlayback React Component - ${element_name}`);
+          throw new Error(`Unrecognised WebPlayback.Screen type - ${child_type}`);
       }
-
-      return child;
     });
   }
 
   getViewState = (state) => {
-    var element;
-
-    this.childrenWithAddedProps().forEach(child => {
-      let element_name = child.type.name;
-      if (state === element_name) {
-        element = child;
-      }
-    });
-
-    return [ element ];
+    return this.childrenWithAddedProps().filter(child => {
+      return state === child.props.type;
+    })[0];
   }
 
   render = () => {
-    return (
+    let result = (
       <div>
-        {this.state.error && this.getViewState("WebPlaybackError")}
-        {!this.state.loaded && this.getViewState("WebPlaybackLoading")}
-        {this.state.loaded && !this.state.selected && this.getViewState("WebPlaybackWaitingForDevice")}
-        {this.state.loaded && this.state.selected && this.getViewState("WebPlaybackScreen")}
+        {this.state.error && this.getViewState("Error")}
+        {!this.state.loaded && this.getViewState("Loading")}
+        {this.state.loaded && !this.state.selected && this.getViewState("WaitingForDevice")}
+        {this.state.loaded && this.state.selected && this.getViewState("Player")}
       </div>
     );
+
+    return result;
   }
 }
 
 export {
-  WebPlaybackError,
-  WebPlaybackLoading,
-  WebPlaybackWaitingForDevice,
   WebPlaybackScreen,
   WebPlayback
 };
