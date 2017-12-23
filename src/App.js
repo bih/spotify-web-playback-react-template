@@ -7,6 +7,8 @@ import WebPlayback from './spotify/spotify-web-playback.js';
 
 class NowPlayingView extends Component {
   render = () => {
+    let { playerState } = this.props;
+    let { progress } = playerState;
     let {
       id,
       uri: track_uri,
@@ -21,14 +23,14 @@ class NowPlayingView extends Component {
         uri: album_uri,
         images: [{ url: album_image }]
       }
-    } = this.props.track_window.current_track;
+    } = playerState.track_window.current_track;
 
     return (
       <div>
         <img src={album_image} />
         <h3><a href={track_uri}>{track_name}</a> by <a href={artist_uri}>{artist_name}</a></h3>
         <h3><a href={album_uri}>{album_name}</a></h3>
-        <h3>ID: {id} | Duration: {duration_ms}</h3>
+        <h3>ID: {id} | Progress: {progress} | Duration: {duration_ms}</h3>
         <NowPlayingControls />
       </div>
     );
@@ -93,7 +95,7 @@ class App extends Component {
           onPlayerReady={(data) => console.log("player ready", data)}
           onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
           <h1>Web Playback SDK</h1>
-          {playerState && <NowPlayingView track_window={playerState.track_window} />}
+          {playerState && <NowPlayingView playerState={playerState} />}
         </WebPlayback> }
         <br />
         <a href="https://github.com/bih/spotify-web-playback-react-template">Fork on GitHub</a>
