@@ -37,8 +37,7 @@ This is the React component(s) this project exposes:
   </WebPlaybackWaitingForDevice>
 
   <WebPlaybackScreen>
-    <h1>Web Playback SDK</h1>
-    {playerState && <NowPlayingView playerState={playerState} />}
+    <h1>Music is playing!</h1>
   </WebPlaybackScreen>
 </WebPlayback>
 ```
@@ -55,12 +54,18 @@ Once loaded, it is available in JavaScript under `window.Spotify.PlayerInstance`
 
 ```jsx
 <WebPlayback
-  playerName="Bilawal's React Player" {# The name of your player that shows up in Spotify. }
-  playerInitialVolume={1.0} {# The initial volume of your player. Between 0 and 1. (Recommended: 1.0) }
-  playerAutoConnect={true} {# Once defined, should it load automatically? (Recommended: Yes) }
-  userAccessToken={userAccessToken} {# The Spotify access token. See https://beta.developer.spotify.com/documentation/web-playback-sdk for more info. }
-  onPlayerReady={(data) => console.log("player ready", data)} {# Optional: Callback for when the player is ready to play music. }
-  onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}> {# Optional: Callback for when the player state has changed. }
+  {/* playerName -> The name of your player that shows up in Spotify. */}
+  playerName="Bilawal's React Player"
+  {/* playerInitialVolume -> The initial volume of your player. Between 0 and 1. (Recommended: 1.0) */}
+  playerInitialVolume={1.0}
+  {/* playerAutoConnect -> Once defined, should it load automatically? (Recommended: Yes) */}
+  playerAutoConnect={true}
+  {/* userAccessToken -> The Spotify access token. See https://beta.developer.spotify.com/documentation/web-playback-sdk for more info. */}
+  userAccessToken={userAccessToken}
+  {/* Optional: Callback for when the player is ready to play music. */}
+  onPlayerReady={(data) => console.log("player ready", data)}
+  {/* Optional: Callback for when the player state has changed. */}
+  onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
 ...
 </WebPlayback>
 ```
@@ -123,8 +128,7 @@ The contents of this element will only be visible when playback is available. Th
 ```jsx
 <WebPlayback ...>
   <WebPlaybackScreen>
-    <h3>Web Playback SDK</h3>
-    You're listening to {this.state.playerState.track_window.current_track.name}!
+    <h3>Music is playing!</h3>
   </WebPlaybackScreen>
 
   ...
