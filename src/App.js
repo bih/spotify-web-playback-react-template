@@ -8,7 +8,7 @@ import WebPlayback from './spotify/spotify-web-playback.js';
 class NowPlayingView extends Component {
   render = () => {
     let { playerState } = this.props;
-    let { progress } = playerState;
+    let { position: position_ms } = playerState;
     let {
       id,
       uri: track_uri,
@@ -30,7 +30,7 @@ class NowPlayingView extends Component {
         <img src={album_image} />
         <h3><a href={track_uri}>{track_name}</a> by <a href={artist_uri}>{artist_name}</a></h3>
         <h3><a href={album_uri}>{album_name}</a></h3>
-        <h3>ID: {id} | Progress: {progress} | Duration: {duration_ms}</h3>
+        <h3>ID: {id} | Position: {position_ms} | Duration: {duration_ms}</h3>
         <NowPlayingControls />
       </div>
     );
