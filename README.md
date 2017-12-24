@@ -24,19 +24,19 @@ This is the React component(s) this project exposes:
   onPlayerReady={(data) => console.log("player ready", data)}
   onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
 
-  <Screen type="Error">
+  <Screen Error>
     <h3>Error</h3>
   </Screen>
 
-  <Screen type="Loading">
+  <Screen Loading>
     <h3>Loading Web Playback SDK</h3>
   </Screen>
 
-  <Screen type="WaitingForDevice">
+  <Screen WaitingForDevice>
     <h3>Waiting for Device to be Selected</h3>
   </Screen>
 
-  <Screen type="Player">
+  <Screen Player>
     <h1>Music is playing!</h1>
   </Screen>
 </WebPlayback>
@@ -63,15 +63,17 @@ Once loaded, it is available in JavaScript under `window.Spotify.PlayerInstance`
   playerAutoConnect={true}
   {/* userAccessToken -> The Spotify access token. See https://beta.developer.spotify.com/documentation/web-playback-sdk for more info. */}
   userAccessToken={userAccessToken}
-  {/* Optional: Callback for when the player is ready to play music. */}
+  {/* Optional: onPlayerReady -> Callback for when the player is ready to play music. */}
   onPlayerReady={(data) => console.log("player ready", data)}
-  {/* Optional: Callback for when the player state has changed. */}
-  onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
-...
+  {/* Optional: onPlayerStateChange -> Callback for when the player state has changed. */}
+  onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}
+  >
+
+  ...
 </WebPlayback>
 ```
 
-### <Screen type="Error" />
+### <Screen Error />
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
@@ -79,7 +81,7 @@ The contents of this element will only be visible when an error has occurred in 
 
 ```jsx
 <WebPlayback ...>
-  <Screen type="Error">
+  <Screen Error>
     <h3>An error has occurred!</h3>
   </Screen>
 
@@ -87,7 +89,7 @@ The contents of this element will only be visible when an error has occurred in 
 </WebPlayback>
 ```
 
-### <Screen type="Loading" />
+### <Screen Loading />
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
@@ -95,7 +97,7 @@ The contents of this element will only be visible whilst the SDK being loaded in
 
 ```jsx
 <WebPlayback ...>
-  <Screen type="Loading">
+  <Screen Loading>
     <h3>Loading the Web Playback SDK. Please wait ....</h3>
   </Screen>
 
@@ -103,7 +105,7 @@ The contents of this element will only be visible whilst the SDK being loaded in
 </WebPlayback>
 ```
 
-### <Screen type="WaitingForDevice" />
+### <Screen WaitingForDevice />
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
@@ -112,7 +114,7 @@ This can be done automatically [through the Web API](https://beta.developer.spot
 
 ```jsx
 <WebPlayback ...>
-  <Screen type="WaitingForDevice">
+  <Screen WaitingForDevice>
     <h3>Waiting for Device to be Selected</h3>
   </Screen>
 
@@ -120,7 +122,7 @@ This can be done automatically [through the Web API](https://beta.developer.spot
 </WebPlayback>
 ```
 
-### <Screen type="Player" />
+### <Screen Player />
 
 **Note:** This element must be nested inside of `<WebPlayback />` as per the example code above.
 
@@ -128,7 +130,7 @@ The contents of this element will only be visible when playback is available. Th
 
 ```jsx
 <WebPlayback ...>
-  <Screen type="Player">
+  <Screen Player>
     <h3>Music is playing!</h3>
   </Screen>
 

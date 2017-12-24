@@ -106,19 +106,19 @@ class App extends Component {
             onPlayerReady={(data) => console.log("player ready", data)}
             onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
 
-            <Screen type="Error">
+            <Screen Error>
               <h3>Error</h3>
             </Screen>
 
-            <Screen type="Loading">
+            <Screen Loading>
               <h3>Loading Web Playback SDK</h3>
             </Screen>
 
-            <Screen type="WaitingForDevice">
+            <Screen WaitingForDevice>
               <h3>Waiting for Device to be Selected</h3>
             </Screen>
 
-            <Screen type="Player">
+            <Screen Player>
               <h1>Web Playback SDK + React</h1>
               {playerState && <NowPlayingView playerState={playerState} />}
             </Screen>

@@ -15,7 +15,7 @@ class WebPlaybackLoading extends Component {
   }
 
   render = () => {
-    return (<h3>Loading the Web Playback SDK ...</h3>);
+    return this.props.children;
   }
 }
 
@@ -54,7 +54,7 @@ class WebPlaybackWaitingForDevice extends Component {
   }
 
   render = () => {
-    return (<h3>Waiting for Device to Transfer to Web Playback SDK</h3>);
+    return this.props.children;
   }
 }
 
@@ -91,23 +91,32 @@ class WebPlayback extends Component {
     if (this.interval) clearInterval(this.interval);
   }
 
+  getTypeName = (props) => {
+    let prop_keys = Object.keys(props);
+    if (prop_keys.includes("Error")) return "Error";
+    if (prop_keys.includes("Loading")) return "Loading";
+    if (prop_keys.includes("WaitingForDevice")) return "WaitingForDevice";
+    if (prop_keys.includes("Player")) return "Player";
+    throw new Error(`Unrecognised WebPlayback.Screen type`);
+  }
+
   childrenWithAddedProps = () => {
     return React.Children.map(this.props.children, child => {
-      let { type: child_type } = child.props;
+      let child_type = this.getTypeName(child.props);
 
       switch (child_type) {
         case 'Error':
           return React.cloneElement(child, { errorMessage: this.state.error });
         case 'Loading':
           return (
-            <WebPlaybackLoading type="Loading" setLoadingState={this.setLoadingState}>
-              {this.props.children}
+            <WebPlaybackLoading Loading setLoadingState={this.setLoadingState}>
+              {child.props.children}
             </WebPlaybackLoading>
           );
         case 'WaitingForDevice':
           return (
-            <WebPlaybackWaitingForDevice type="WaitingForDevice" {...this.props}>
-              {this.props.children}
+            <WebPlaybackWaitingForDevice WaitingForDevice {...this.props}>
+              {child.props.children}
             </WebPlaybackWaitingForDevice>
           );
         case 'Player':
@@ -119,19 +128,19 @@ class WebPlayback extends Component {
     });
   }
 
-  getViewState = (state) => {
+  getScreenByTypeName = (type_name) => {
     return this.childrenWithAddedProps().filter(child => {
-      return state === child.props.type;
+      return type_name === this.getTypeName(child.props);
     })[0];
   }
 
   render = () => {
     let result = (
       <div>
-        {this.state.error && this.getViewState("Error")}
-        {!this.state.loaded && this.getViewState("Loading")}
-        {this.state.loaded && !this.state.selected && this.getViewState("WaitingForDevice")}
-        {this.state.loaded && this.state.selected && this.getViewState("Player")}
+        {this.state.error && this.getScreenByTypeName("Error")}
+        {!this.state.loaded && this.getScreenByTypeName("Loading")}
+        {this.state.loaded && !this.state.selected && this.getScreenByTypeName("WaitingForDevice")}
+        {this.state.loaded && this.state.selected && this.getScreenByTypeName("Player")}
       </div>
     );
 
