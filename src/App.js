@@ -1,133 +1,117 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, { Component, Fragment } from 'react';
+import WebPlaybackReact from './Spotify/WebPlaybackReact.js';
+
 import './App.css';
+import Header from './layout/Header.js';
+import Footer from './layout/Footer.js';
 
-// Add Spotify Web Playback for React
-import {
-  WebPlaybackScreen as Screen,
-  WebPlayback
-} from './spotify/spotify-web-playback.js';
+import LoginCallback from './Spotify/LoginCallback.js';
 
-class NowPlayingView extends Component {
-  render = () => {
-    let { playerState } = this.props;
-    let { position: position_ms } = playerState;
-    let {
-      id,
-      uri: track_uri,
-      name: track_name,
-      duration_ms,
-      artists: [{
-        name: artist_name,
-        uri: artist_uri
-      }],
-      album: {
-        name: album_name,
-        uri: album_uri,
-        images: [{ url: album_image }]
-      }
-    } = playerState.track_window.current_track;
+import IntroScreen from './screens/Intro.js';
+import NowPlayingScreen from './screens/NowPlaying.js';
 
-    return (
-      <div>
-        <img src={album_image} alt={track_name} />
-        <h3><a href={track_uri}>{track_name}</a> by <a href={artist_uri}>{artist_name}</a></h3>
-        <h3><a href={album_uri}>{album_name}</a></h3>
-        <h3>ID: {id} | Position: {position_ms} | Duration: {duration_ms}</h3>
-        <NowPlayingControls />
-      </div>
-    );
-  }
-}
+window.onSpotifyWebPlaybackSDKReady = () => {};
 
-class NowPlayingControls extends Component {
-  render = () => {
-    return (
-      <div>
-        <button onClick={() => window.Spotify.PlayerInstance.resume()}>Resume</button>
-        <button onClick={() => window.Spotify.PlayerInstance.pause()}>Pause</button>
-        <button onClick={() => window.Spotify.PlayerInstance.previousTrack()}>Previous Track</button>
-        <button onClick={() => window.Spotify.PlayerInstance.nextTrack()}>Next Track</button>
-      </div>
-    );
-  }
-}
-
-class CollectUserAccessToken extends Component {
-  render = () => {
-    return (
-      <div>
-        <form onSubmit={() => this.props.setUserAccessToken(this.userInput.value)}>
-          <label>
-            <h3>Enter User Access Token</h3>
-            <input type="text" name="userAccessToken" ref={(c) => this.userInput = c} onChange={() => {}} />
-          </label>
-          <button type="submit">Submit</button>
-        </form>
-        <br />
-        <br />
-        <a href="https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify">Get Your Access Token from <strong>Spotify for Developers</strong></a>
-      </div>
-    );
-  }
-}
-
-class App extends Component {
+export default class App extends Component {
   state = {
+    // User's session credentials
+    userDeviceId: null,
     userAccessToken: null,
+
+    // Player state
+    playerLoaded: false,
+    playerSelected: false,
     playerState: null
   }
 
-  render = () => {
+  componentWillMount() {
+    LoginCallback({
+      onSuccessfulAuthorization: this.onSuccessfulAuthorization.bind(this),
+      onAccessTokenExpiration: this.onAccessTokenExpiration.bind(this)
+    });
+  }
+  
+  onSuccessfulAuthorization(accessToken) {
+    this.setState({
+      userAccessToken: accessToken
+    });
+  }
+  
+  onAccessTokenExpiration() {
+    this.setState({
+      userDeviceId: null,
+      userAccessToken: null,
+      playerLoaded: false,
+      playerSelected: false,
+      playerState: null
+    });
+
+    console.error("The user access token has expired.");
+  }
+  
+  render() {
     let {
+      userDeviceId,
       userAccessToken,
+      playerLoaded,
+      playerSelected,
       playerState
     } = this.state;
-
+    
+    let webPlaybackSdkProps = {
+      playerName: "Spotify React Player",
+      playerInitialVolume: 1.0,
+      playerRefreshRateMs: 100,
+      playerAutoConnect: true,
+      onPlayerRequestAccessToken: (() => userAccessToken),
+      onPlayerLoading: (() => this.setState({ playerLoaded: true })),
+      onPlayerWaitingForDevice: (data => this.setState({ playerSelected: false, userDeviceId: data.device_id })),
+      onPlayerDeviceSelected: (() => this.setState({ playerSelected: true })),
+      onPlayerStateChange: (playerState => this.setState({ playerState: playerState })),
+      onPlayerError: (playerError => console.error(playerError))
+    };
+    
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <br />
-        {!userAccessToken &&
-          <CollectUserAccessToken
-            setUserAccessToken={(token) => this.setState({ userAccessToken: token })} />}
-        {userAccessToken &&
-          <WebPlayback
-            playerName="Bilawal's React Player"
-            playerInitialVolume={1.0}
-            playerAutoConnect={true}
-            userAccessToken={userAccessToken}
-            onPlayerReady={(data) => console.log("player ready", data)}
-            onPlayerStateChange={(playerState) => this.setState({ playerState: playerState })}>
+        <Header />
+      
+        <main>
+          {!userAccessToken && <IntroScreen />}
+          {userAccessToken &&
+            <WebPlaybackReact {...webPlaybackSdkProps}>
+              {!playerLoaded &&
+                <h2 className="action-orange">Loading Player</h2>
+              }
 
-            <Screen Error>
-              <h3>Error</h3>
-            </Screen>
+              {playerLoaded && !playerSelected && 
+                <Fragment>
+                  <h2 className="action-green">Loading Player</h2>
+                  <h2 className="action-orange">Waiting for device to be selected</h2>
+                </Fragment>
+              }
 
-            <Screen Loading>
-              <h3>Loading Web Playback SDK</h3>
-            </Screen>
+              {playerLoaded && playerSelected && !playerState &&
+                <Fragment>
+                  <h2 className="action-green">Loading Player</h2>
+                  <h2 className="action-green">Waiting for device to be selected</h2>
+                  <h2 className="action-orange">Start playing music ...</h2>
+                </Fragment>
+              }
 
-            <Screen WaitingForDevice>
-              <h3>Waiting for Device to be Selected</h3>
-            </Screen>
+              {playerLoaded && playerSelected && playerState &&
+                <Fragment>
+                  <h2 className="action-green">Loading Player</h2>
+                  <h2 className="action-green">Waiting for device to be selected</h2>
+                  <h2 className="action-green">Start playing music!</h2>
+                  <NowPlayingScreen playerState={playerState} />
+                </Fragment>
+              }
+            </WebPlaybackReact>
+          }
+        </main>
 
-            <Screen Player>
-              <h1>Web Playback SDK + React</h1>
-              {playerState && <NowPlayingView playerState={playerState} />}
-            </Screen>
-          </WebPlayback> }
-        <br />
-        <a href="https://github.com/bih/spotify-web-playback-react-template">Fork on GitHub</a> &mdash; Built by <a href="https://bilaw.al">Bilawal Hameed</a>
+        <Footer />
       </div>
     );
   }
-}
-
-export default App;
+};

@@ -3,3 +3,35 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+header, main, footer {
+  padding: 0 20px;
+}
+
+footer {
+  padding: 20px 20px 0;
+}
+
+.spotify-green {
+  color: #1db954;
+}
+
+.action-green { color: #1ED760; }
+.action-green:after { content: " \2713"; }
+.action-orange { color: #FF6437; }
+.action-orange:after { content: " ..."; }
+.action-red { color: #EB1E32; }
+.action-red:after { content: " \2715"; }
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
